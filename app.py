@@ -9,7 +9,7 @@ class NLPApp :
         self.dbo= Database()
 
         #myapi object
-        self.apio=API()
+        self.apio = API()
 
         #login ka gui
         self.root= Tk()
@@ -143,7 +143,7 @@ class NLPApp :
         btn1.pack(pady=(30, 10),padx=(5,5))
 
         #option 2
-        btn1=Button(self.root, text='Named entity Relation', width=30, height=4, command=self.ner)
+        btn1=Button(self.root, text='Named entity Recognition', width=30, height=4, command=self.ner)
         btn1.configure(bg=('#B2ACBB'), fg='black', font=(15))
         btn1.pack(pady=(30, 10),padx=(5,5))
 
@@ -155,7 +155,7 @@ class NLPApp :
     def ner(self):
         self.clear()
 
-        heading=Label(self.root, text='Named Entity Relation', bg='#7956A8')
+        heading=Label(self.root, text='Named Entity Recognition', bg='#7956A8')
         heading.pack(pady=(30, 30))
         heading.configure(font=('verdana', 18,'italic'))
 
@@ -168,17 +168,27 @@ class NLPApp :
         self.ner_input.pack(pady=(5,5),padx=(8,8),ipady=4)
 
         #analyse ka button
-        btn1=Button(self.root,text="Analyse", bg='#B2ACBB')
+        btn1=Button(self.root,text="Analyse", bg='#B2ACBB', command=self.do_analyse_ner)
         btn1.pack(pady=(5,5))
 
         #analysed text show karo
-        label2=Label(self.root, text="", bg='#7956A8')
-        label2.pack(pady=(10, 5), anchor='w')
-        label2.configure(font=('verdana', 18, 'bold'))
+        self.ner_result=Label(self.root, text="", bg='#7956A8')
+        self.ner_result.pack(pady=(10, 5), anchor='w')
+        self.ner_result.configure(font=('verdana', 10))
 
         #bhago wapas
         btn1=Button(self.root, text="Go Back", bg='#B2ACBB', command=self.home)
         btn1.pack(pady=(5, 5))
+
+    def do_analyse_ner(self):
+        txt=self.ner_input.get()
+        response=self.apio.ner(txt)
+        tt=''
+        for i in response['entities']:
+          tt= tt + str(i) +'\n'
+        print(tt)
+        self.ner_result['text']= tt
+        print(response)   
 
     def sentiment(self):
         self.clear()
@@ -200,9 +210,9 @@ class NLPApp :
         btn1.pack(pady=(5,5))
 
         #analysed text show karo
-        label2=Label(self.root, text="", bg='#7956A8')
-        label2.pack(pady=(10, 5), anchor='w')
-        label2.configure(font=('verdana', 18, 'bold'))
+        self.sentiment_result=Label(self.root, text="", bg='#7956A8')
+        self.sentiment_result.pack(pady=(10, 5), anchor='w')
+        self.sentiment_result.configure(font=('verdana', 10))
 
         #bhago wapas
         btn1=Button(self.root, text="Go Back", bg='#B2ACBB', command=self.home)
@@ -210,7 +220,12 @@ class NLPApp :
 
     def do_analyse_sentiment(self):
         txt=self.sentiment_input.get()
-        response=apio.analyse(txt)
+        response=self.apio.analyse(txt)
+        tt=''
+        for i in response['sentiment']:
+            tt= tt + i +'-->' + str(response['sentiment'][i]) +'\n'
+        print(tt)
+        self.sentiment_result['text']= tt
         print(response)
 
 
@@ -226,19 +241,31 @@ class NLPApp :
         label1.pack(pady=(10,5), anchor='w')
         label1.configure(font=('verdana',10,'bold'))
 
-        self.emotion_input= Entry(self.root,width=40, )
+        self.emotion_input= Entry(self.root,width=40)
         self.emotion_input.pack(pady=(5,5),padx=(8,8),ipady=4)
 
         #analyse ka button
-        btn1=Button(self.root,text="Analyse", bg='#B2ACBB')
+        btn1=Button(self.root,text="Analyse", bg='#B2ACBB', command=self.do_analyse_emotion)
         btn1.pack(pady=(5,5))
 
         #analysed text show karo
-        label2=Label(self.root, text="", bg='#7956A8')
-        label2.pack(pady=(10, 5), anchor='w')
-        label2.configure(font=('verdana', 18, 'bold'))
+        self.emotion_result=Label(self.root, text="", bg='#7956A8')
+        self.emotion_result.pack(pady=(10, 5), anchor='w')
+        self.emotion_result.configure(font=('verdana', 18, 'bold'))
 
         #bhago wapas
         btn1=Button(self.root, text="Go Back", bg='#B2ACBB', command=self.home)
         btn1.pack(pady=(5, 5))
+
+    def do_analyse_emotion(self):
+       
+        txt=self.emotion_input.get()
+        response=self.apio.emotion(txt)
+        tt=''
+        for i in response['emotion']:
+            tt= tt + i +'-->' + str(response['emotion'][i]) +'\n'
+        print(tt)
+        self.emotion_result['text']= tt
+        print(response)
+
 nlp=NLPApp()
